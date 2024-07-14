@@ -1,0 +1,27 @@
+{
+	"name": "haveno-markets",
+	"version": "1.0.0",
+	"private": true,
+	"scripts": {
+		"dev": "vite dev",
+		"build": "vite build",
+		"preview": "vite preview",
+		"fix": "biome check --write *",
+		"lint": "biome check *"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^1.8.3",
+		"@sveltejs/kit": "^2.5.18",
+		"@sveltejs/vite-plugin-svelte": "^3.1.1",
+		"sass": "^1.77.8",
+		"svelte": "^4.2.18",
+		"svelte-adapter-bun": "^0.5.2",
+		"svelte-preprocess": "^5.1.4",
+		"vite": "^5.3.3"
+	},
+	"type": "module",
+	"dependencies": {
+		"lightweight-charts": "^4.1.7",
+		"svelte-lightweight-charts": "^2.2.0"
+	}
+}
