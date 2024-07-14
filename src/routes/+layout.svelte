@@ -1,3 +1,19 @@
+<script>
+Object.groupBy ||= (values, keyFinder) => {
+	return values.reduce((a, b) => {
+		const key = typeof keyFinder === "function" ? keyFinder(b) : b[keyFinder];
+
+		if (!a[key]) {
+			a[key] = [b];
+		} else {
+			a[key] = [...a[key], b];
+		}
+
+		return a;
+	}, {});
+};
+</script>
+
 <div class="col app">
     <div class="row header">
         <span style="display:flex;align-items:center;gap:.2em;width:128px">

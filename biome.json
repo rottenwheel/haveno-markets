@@ -13,6 +13,9 @@
 			}
 		}
 	},
+	"files": {
+		"ignore": ["build"]
+	},
 	"overrides": [
 		{
 			"include": ["*.svelte"]
