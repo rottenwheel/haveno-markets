@@ -15,22 +15,28 @@ Object.groupBy ||= (values, keyFinder) => {
 </script>
 
 <div class="col app">
-    <div class="row header">
-        <span style="display:flex;align-items:center;gap:.2em;width:128px">
-            <img src="/haveno_logo_icon.png" alt="" style="height:1em;"/>
+    <div class="row header" style="align-content:center;">
+        <span>
+            <img src="/haveno_logo.png" alt="" style="height:1em;"/>
             <a href="https://haveno.exchange">haveno.exchange</a>
         </span>
         <a href="/">haveno.markets</a>
-        <span style="display:flex;align-items:center;gap:.2em;width:128px">
-            <img src="/monero-symbol-on-white-1280.png" alt="" style="height:1em;"/>
+        <span>
+            <img src="/monero_logo.png" alt="" style="height:1em;"/>
             <a href="https://xmrchain.net">xmrchain.net</a>
         </span>
     </div>
     <div class="col container">
         <slot></slot>
     </div>
-    <div class="row footer">
-        <a href="monero:84LnuW3YpCQirNMN6y6Px1E3DfwnqwXVRARi9eHjzeSVFJqEQmJCxkP5WpkysbcktqUNhXxQLowhJGSknNjJWZNQ7FKp5bu">
+    <div class="col footer">
+        Data from:
+        <a href="https://haveno-reto.com" style="display:flex;gap:.2em;align-items:center;">
+            <img src="/haveno-reto_logo.svg" alt="" style="height:1em;width:1em;"/>
+            haveno-reto
+        </a>
+        Donations to haveno.markets: 
+        <a style="word-break:break-all;" href="monero:84LnuW3YpCQirNMN6y6Px1E3DfwnqwXVRARi9eHjzeSVFJqEQmJCxkP5WpkysbcktqUNhXxQLowhJGSknNjJWZNQ7FKp5bu">
             84LnuW3YpCQirNMN6y6Px1E3DfwnqwXVRARi9eHjzeSVFJqEQmJCxkP5WpkysbcktqUNhXxQLowhJGSknNjJWZNQ7FKp5bu
         </a>
     </div>
@@ -52,6 +58,7 @@ Object.groupBy ||= (values, keyFinder) => {
     .footer {
         background-color:#4444;
         margin-top:auto;
+        text-align:center;
     }
     .col{
         display:flex;
@@ -132,6 +139,18 @@ Object.groupBy ||= (values, keyFinder) => {
         }
         .header {
             padding:.2em 0;
+        }
+    }
+    .header > * {
+        display:flex;
+        width:33.3%;
+        align-items: center;
+        justify-content: center;
+        gap:.2em;
+    }
+    @media only screen and (max-width: 600px){
+        .header > * {
+            width:initial;
         }
     }
 </style>

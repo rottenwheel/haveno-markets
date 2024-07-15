@@ -60,19 +60,18 @@ Bun.file(`${import.meta.env.VITE_DB_PATH}/traditional_currency_list.json`)
 
 const watcher = watch(import.meta.env.VITE_DB_PATH, async (_, filename) => {
 	const file = Bun.file(import.meta.env.VITE_DB_PATH + filename);
-	const contents = await file.json();
 	switch (filename) {
 		case "offers_statistics.json":
-			offers.set(formatOffers(contents));
+			offers.set(formatOffers(await file.json()));
 			break;
 		case "trade_statistics.json":
-			trades.set(formatTrades(contents));
+			trades.set(formatTrades(await file.json()));
 			break;
 		case "crypto_currency_list.json":
-			crypto.set(formatCrypto(contents));
+			crypto.set(formatCrypto(await file.json()));
 			break;
 		case "traditional_currency_list.json":
-			fiat.set(formatFiat(contents));
+			fiat.set(formatFiat(await file.json()));
 			break;
 	}
 });

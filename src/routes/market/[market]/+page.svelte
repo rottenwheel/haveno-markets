@@ -65,6 +65,7 @@ const gridLayout = {
 };
 
 const marketPair = isMoneroQuote(market) ? `${market}/XMR` : `XMR/${market}`;
+const BUY_SELL = isMoneroQuote(market) ? ["SELL", "BUY"] : ["BUY", "SELL"];
 </script>
 <svelte:head>
 	<title>{marketPair} - Haveno Markets</title>
@@ -88,7 +89,7 @@ const marketPair = isMoneroQuote(market) ? `${market}/XMR` : `XMR/${market}`;
 		<th>Amount (XMR)</th>
 		<th>Amount ({market})</th>
 	</tr>
-    {#each data.offers["BUY"]?.toSorted((a,b) => a.price < b.price ? 1 : -1)||[] as offer}
+    {#each data.offers[BUY_SELL[0]]?.toSorted((a,b) => a.price < b.price ? 1 : -1)||[] as offer}
     <tr title={offer.paymentMethod}>
 		<td>{formatPrice(offer.price, market, false, false)}</td>
 		<td>{formatPrice(offer.amount, "XMR", false, false)}</td>
@@ -105,7 +106,7 @@ const marketPair = isMoneroQuote(market) ? `${market}/XMR` : `XMR/${market}`;
 		<th>Amount (XMR)</th>
 		<th>Amount ({market})</th>
 	</tr>
-    {#each data.offers["SELL"]?.toSorted((a,b) => a.price > b.price ? 1 : -1)||[] as offer}
+    {#each data.offers[BUY_SELL[1]]?.toSorted((a,b) => a.price > b.price ? 1 : -1)||[] as offer}
     <tr title={offer.paymentMethod}>
 		<td>{formatPrice(offer.price, market, false, false)}</td>
 		<td>{formatPrice(offer.amount, "XMR", false, false)}</td>
