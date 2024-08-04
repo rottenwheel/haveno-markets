@@ -21,7 +21,7 @@ const getSignificantDigits = (price) => {
 	for (; i < 20; i++) {
 		if (Math.floor(avg * 10 ** i) >= 1000) break;
 	}
-	if (i <= 1 || avg == 0) i = 2;
+	if (i <= 1 || avg === 0) i = 2;
 	return i;
 };
 

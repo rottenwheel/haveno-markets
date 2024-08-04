@@ -30,15 +30,26 @@ Object.groupBy ||= (values, keyFinder) => {
         <slot></slot>
     </div>
     <div class="col footer">
-        Data from:
-        <a href="https://haveno-reto.com" style="display:flex;gap:.2em;align-items:center;">
-            <img src="/haveno-reto_logo.svg" alt="" style="height:1em;width:1em;"/>
-            haveno-reto
-        </a>
-        Donations to haveno.markets: 
-        <a style="word-break:break-all;" href="monero:84LnuW3YpCQirNMN6y6Px1E3DfwnqwXVRARi9eHjzeSVFJqEQmJCxkP5WpkysbcktqUNhXxQLowhJGSknNjJWZNQ7FKp5bu">
-            84LnuW3YpCQirNMN6y6Px1E3DfwnqwXVRARi9eHjzeSVFJqEQmJCxkP5WpkysbcktqUNhXxQLowhJGSknNjJWZNQ7FKp5bu
-        </a>
+        <span>
+            Links:
+            <a href="https://haveno.markets">Clearnet</a> |
+            <a href="http://lsj5o4i7iiogz6q4rstiv75nk7kots2f2nhuga75y7s23leskz2uh6id.onion">Tor</a> |
+            <a href="http://haveno-markets.i2p">I2P</a>
+            <a href="http://okoeicsihmjkqcqaiqow3arcrzm5ascwhpxq34incxg6a5z4tjza.b32.i2p">(b32)</a>
+        </span>
+        <span>
+            Data from:
+            <a href="https://haveno-reto.com" style="display:inline-flex;gap:.2em;align-items:center;">
+                <img src="/haveno-reto_logo.svg" alt="" style="height:1em;width:1em;"/>
+                haveno-reto
+            </a>
+        </span>
+        <span>
+            Donations: 
+            <a style="word-break:break-all;" href="monero:84LnuW3YpCQirNMN6y6Px1E3DfwnqwXVRARi9eHjzeSVFJqEQmJCxkP5WpkysbcktqUNhXxQLowhJGSknNjJWZNQ7FKp5bu">
+                84LnuW3YpCQirNMN6y6Px1E3DfwnqwXVRARi9eHjzeSVFJqEQmJCxkP5WpkysbcktqUNhXxQLowhJGSknNjJWZNQ7FKp5bu
+            </a>
+        </span>
     </div>
 </div>
 <style lang="scss" global>
