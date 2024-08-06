@@ -1,10 +1,15 @@
 import { watch } from "fs";
-import { writable } from "svelte/store";
+import { derived, writable } from "svelte/store";
 
 const offers = writable([]);
 const trades = writable([]);
 const crypto = writable([]);
 const fiat = writable([]);
+const liquidity = derived(offers, ($offers) =>
+	Object.values($offers)
+		.flat()
+		.reduce((a, b) => a + Number.parseInt(b.amount), 0),
+);
 
 const formatTrades = (e) => {
 	return e.map((e) => {
@@ -20,11 +25,26 @@ const formatTrades = (e) => {
 	});
 };
 const formatOffers = (e) => {
-	return Object.groupBy(e, ({ currencyCode }) => currencyCode);
+	return Object.groupBy(
+		e.map((e) => {
+			return {
+				direction: e.direction,
+				currencyCode: e.currencyCode,
+				amount: e.amount,
+				price: e.price,
+				paymentMethod: e.paymentMethod,
+				primaryMarketAmount: e.primaryMarketAmount,
+			};
+		}),
+		({ currencyCode }) => currencyCode,
+	);
 };
 const formatCrypto = (e) => {
-	e[e.findIndex((e) => e.code === "XMR")].precision = 12;
-	e[e.findIndex((e) => e.code === "XMR")].sign = "ɱ";
+	e.push({
+		precision: 12,
+		code: "XMR",
+		sign: "ɱ",
+	});
 	return e;
 };
 const formatFiat = (e) => {
@@ -47,15 +67,15 @@ Bun.file(`${import.meta.env.VITE_DB_PATH}trade_statistics.json`)
 	.then((j) => {
 		trades.set(formatTrades(j));
 	});
-Bun.file(`${import.meta.env.VITE_DB_PATH}crypto_currency_list.json`)
-	.json()
-	.then((j) => {
-		crypto.set(formatCrypto(j));
-	});
-Bun.file(`${import.meta.env.VITE_DB_PATH}/traditional_currency_list.json`)
+Bun.file(`${import.meta.env.VITE_DB_PATH}active_traditional_currency_list.json`)
 	.json()
 	.then((j) => {
 		fiat.set(formatFiat(j));
+	});
+Bun.file(`${import.meta.env.VITE_DB_PATH}active_crypto_currency_list.json`)
+	.json()
+	.then((j) => {
+		crypto.set(formatCrypto(j));
 	});
 
 const watcher = watch(import.meta.env.VITE_DB_PATH, async (_, filename) => {
@@ -84,4 +104,4 @@ process.on("SIGINT", () => {
 	process.exit(0);
 });
 
-export { offers, trades, crypto, fiat };
+export { offers, trades, crypto, fiat, liquidity };

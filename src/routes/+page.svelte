@@ -111,9 +111,6 @@ const gridLayout = {
 	},
 };
 let w;
-const liquidity = Object.values(data.offers)
-	.flat()
-	.reduce((a, b) => a + Number.parseInt(b.amount), 0);
 </script>
 
 <svelte:head>
@@ -125,77 +122,81 @@ const liquidity = Object.values(data.offers)
 		<h4>XMR/USD</h4>
 		<span class="price">{formatPrice(grouped["USD"][0].price, "USD", true)}</span>
 	</div>
-    <div class="col card">
-        <h4>Liquidity</h4>
-        <span class="price">{formatPrice(liquidity, "XMR", true, false)}</span>
-    </div>
+	<div class="col card">
+		<h4>Liquidity</h4>
+		<span class="price">{formatPrice(data.liquidity, "XMR", true, false)}</span>
+	</div>
 </div>
 
 <div class="row">
-    <div class="col card" style="flex:1;" bind:clientWidth={w}>
-        <h4>Price XMR/<select bind:value={key}>
-            {#each Object.keys(grouped) as key}
-            	<option>{key}</option>
-            {/each}
-        </select></h4>
+	<div class="col card" style="flex:1;" bind:clientWidth={w}>
+		<h4>Price XMR/<select bind:value={key}>
+			{#each Object.keys(grouped) as key}
+				<option>{key}</option>
+			{/each}
+		</select></h4>
 
-        <Chart width={w-20} height={300} container={{class:"row"}} layout={chartLayout} grid={gridLayout}>
-            <CandlestickSeries data={trades} reactive={true} priceFormat={{minMove:10**-precision, precision:precision}}></CandlestickSeries>
-            <TimeScale rightBarStaysOnScroll={true} rightOffset={0}/>
-        </Chart>
-    </div>
-    <div class="col card" style="flex:1">
-        <h4>
-            <select bind:value={interval}>
-                <option value="3600000">Hourly</option>
-                <option value="86400000">Daily</option>
-                <option value="604800000">Weekly</option>
-            </select> Volume</h4>
-        <Chart width={w-20} height={300} container={{class:"row"}} layout={chartLayout} grid={gridLayout}>
-            <LineSeries data={volume} reactive={true} priceFormat={{precision:2, minMove:.01}}>
-                <PriceScale scaleMargins={{bottom:.4, top:.1}}/>
-            </LineSeries>
-            <HistogramSeries data={swaps} reactive={true} priceScaleId="" priceFormat={{precision:0, minMove:1}}>
-				<PriceScale scaleMargins={{top:.7, bottom:0}}/>
-            </HistogramSeries>
+		<Chart width={w-20} height={300} container={{class:"row"}} layout={chartLayout} grid={gridLayout}>
+			<CandlestickSeries data={trades} reactive={true} priceFormat={{minMove:10**-precision, precision:precision}}></CandlestickSeries>
 			<TimeScale rightBarStaysOnScroll={true} rightOffset={0}/>
-        </Chart>
-    </div>
+		</Chart>
+	</div>
+	<div class="col card" style="flex:1">
+		<h4>
+			<select bind:value={interval}>
+				<option value="3600000">Hourly</option>
+				<option value="86400000">Daily</option>
+				<option value="604800000">Weekly</option>
+			</select> Volume</h4>
+		<Chart width={w-20} height={300} container={{class:"row"}} layout={chartLayout} grid={gridLayout}>
+			<LineSeries data={volume} reactive={true} priceFormat={{precision:2, minMove:.01}}>
+				<PriceScale scaleMargins={{bottom:.4, top:.1}}/>
+			</LineSeries>
+			<HistogramSeries data={swaps} reactive={true} priceScaleId="" priceFormat={{precision:0, minMove:1}}>
+				<PriceScale scaleMargins={{top:.7, bottom:0}}/>
+			</HistogramSeries>
+			<TimeScale rightBarStaysOnScroll={true} rightOffset={0}/>
+		</Chart>
+	</div>
 </div>
 <div class="row">
 <div class="card col">
-    <h4>Markets</h4>
-    <table>
-        <tr>
-            <th>Currency</th>
-            <th>Price</th>
-            <th>Trades</th>
-        </tr>
-        {#each Object.values(Object.groupBy(data.trades, ({currency}) => currency)).toSorted((a,b) => b.length - a.length || (b[0].currency < a[0].currency ? 1 : -1)).slice(0, 16) as market}
-        <tr>
-            <td><a href="market/{market[0].currency}">{getAsset(market[0].currency).name} ({market[0].currency})</a></td>
-            <td>{formatPrice(market[0].price, market[0].currency, true, false)}</td>
-            <td>{market.length}</td>
-        </tr>
-        {/each}
-    </table>
-    <h4><a href="markets">View more »</a></h4>
+	<h4>Markets</h4>
+	<table>
+		<tbody>
+			<tr>
+				<th>Currency</th>
+				<th>Price</th>
+				<th>Trades</th>
+			</tr>
+			{#each Object.values(Object.groupBy(data.trades, ({currency}) => currency)).toSorted((a,b) => b.length - a.length || (b[0].currency < a[0].currency ? 1 : -1)).slice(0, 16) as market}
+			<tr>
+				<td><a href="market/{market[0].currency}">{getAsset(market[0].currency).name} ({market[0].currency})</a></td>
+				<td>{formatPrice(market[0].price, market[0].currency, true, false)}</td>
+				<td>{market.length}</td>
+			</tr>
+			{/each}
+		</tbody>
+	</table>
+	<h4><a href="markets">View more »</a></h4>
 </div>
 <div class="card col">
-    <h4>Trades</h4>
+	<h4>Trades</h4>
 <table>
-    <tr>
-        <th>Date</th>
-        <th>Amount (XMR)</th>
-        <th>Amount</th>
-    </tr>
-    {#each data.trades.slice(0, 16) as trade}
-    <tr>
-        <td>{new Date(trade.date).toISOString().replace("T", " ").replace(/\.\d*Z/, "")}</td>
-        <td>{formatPrice(trade.xmrAmount, "XMR", false, false)}</td>
-        <td>{formatPrice(trade.amount, trade.currency, false, false)} <span class="trade-currency">{trade.currency}</span></td>
-    </tr>
-    {/each}
+	<tbody>
+		<tr>
+			<th>Date</th>
+			<th>Amount (XMR)</th>
+			<th>Amount</th>
+		</tr>
+		{#each data.trades.slice(0, 16) as trade}
+		<tr>
+			<td>{new Date(trade.date).toISOString().replace("T", " ").replace(/\.\d*Z/, "")}</td>
+			<td>{formatPrice(trade.xmrAmount, "XMR", false, false)}</td>
+			<td>{formatPrice(trade.amount, trade.currency, false, false)} <span class="trade-currency">{trade.currency}</span></td>
+		</tr>
+		{/each}
+	</tbody>
 </table>
 <h4><a href="trades">View more »</a></h4>
 </div>
