@@ -1,3 +1,4 @@
+<svelte:options runes={true} />
 <script>
 import { page } from "$app/stores";
 import {
@@ -9,18 +10,17 @@ import {
 import { CandlestickSeries, Chart, TimeScale } from "svelte-lightweight-charts";
 
 const market = $page.params.market;
-export let data;
+let {data} = $props();
 const interval = 86400000;
-let trades = [];
-const getData = () => {
-	trades = data.trades
+let trades = $derived((() => {
+	let trades = data.trades
 		.map((e) => {
 			return {
 				time: new Date(e.date),
 				value: getPrice(e.price, e.currency, false, false),
 			};
 		})
-		.toSorted((a, b) => (a.time > b.time ? 1 : -1));
+		.toSorted((a, b) => (a.time - b.time));
 
 	trades = Object.groupBy(
 		trades,
@@ -38,16 +38,11 @@ const getData = () => {
 		}, {});
 		trades[intervalDate].time = Number.parseInt(intervalDate, 10);
 	}
-	trades = Object.values(trades);
-};
-let w;
+	return Object.values(trades);
+})());
 
-let precision = 1e-2;
-
-$: {
-	getData();
-	precision = getSignificantDigits(trades.flatMap((e) => [e.open, e.close]));
-}
+let precision = $derived(getSignificantDigits(trades.flatMap((e) => [e.open, e.close])));
+let w = $state();
 
 const chartLayout = {
 	background: {
@@ -90,7 +85,7 @@ const BUY_SELL = isMoneroQuote(market) ? ["SELL", "BUY"] : ["BUY", "SELL"];
 			<th>Amount (XMR)</th>
 			<th>Amount ({market})</th>
 		</tr>
-		{#each data.offers[BUY_SELL[0]]?.toSorted((a,b) => a.price < b.price ? 1 : -1)||[] as offer}
+		{#each data.offers[BUY_SELL[0]]?.toSorted((a,b) => b.price - a.price)||[] as offer}
 		<tr title={offer.paymentMethod}>
 			<td>{formatPrice(offer.price, market, false, false)}</td>
 			<td>{formatPrice(offer.amount, "XMR", false, false)}</td>
@@ -109,7 +104,7 @@ const BUY_SELL = isMoneroQuote(market) ? ["SELL", "BUY"] : ["BUY", "SELL"];
 			<th>Amount (XMR)</th>
 			<th>Amount ({market})</th>
 		</tr>
-		{#each data.offers[BUY_SELL[1]]?.toSorted((a,b) => a.price > b.price ? 1 : -1)||[] as offer}
+		{#each data.offers[BUY_SELL[1]]?.toSorted((a,b) => a.price - b.price)||[] as offer}
 		<tr title={offer.paymentMethod}>
 			<td>{formatPrice(offer.price, market, false, false)}</td>
 			<td>{formatPrice(offer.amount, "XMR", false, false)}</td>

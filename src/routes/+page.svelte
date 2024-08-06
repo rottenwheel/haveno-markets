@@ -1,3 +1,4 @@
+<svelte:options runes={true} />
 <script>
 import {
 	formatPrice,
@@ -14,20 +15,19 @@ import {
 	TimeScale,
 } from "svelte-lightweight-charts";
 
-export let data;
+let {data} = $props();
 const grouped = Object.groupBy(data.trades, ({ currency }) => currency);
-let trades = {};
-let interval = "86400000";
-let key = "USD";
-const getData = () => {
-	trades = grouped[key]
+let interval = $state("86400000");
+let key = $state("USD");
+let trades = $derived((() => {
+	let trades = grouped[key]
 		.map((e) => {
 			return {
 				time: new Date(e.date),
 				value: getPrice(e.price, e.currency),
 			};
 		})
-		.toSorted((a, b) => (a.time > b.time ? 1 : -1));
+		.toSorted((a, b) => (a.time - b.time));
 
 	trades = Object.groupBy(
 		trades,
@@ -45,12 +45,10 @@ const getData = () => {
 		}, {});
 		trades[intervalDate].time = Number.parseInt(intervalDate, 10);
 	}
-	trades = Object.values(trades);
-};
-let volume = {};
-let swaps = {};
-const getVolume = () => {
-	volume = Object.groupBy(
+	return Object.values(trades);
+})());
+let [volume, swaps] = $derived((() => {
+	let volume = Object.groupBy(
 		data.trades
 			.map((e) => {
 				return {
@@ -58,10 +56,10 @@ const getVolume = () => {
 					time: e.date,
 				};
 			})
-			.toSorted((a, b) => (a.time > b.time ? 1 : -1)),
+			.toSorted((a, b) => (a.time - b.time)),
 		({ time }) => new Date(time - (time % interval)) / 1000,
 	);
-	swaps = {};
+	let swaps = {};
 	for (const intervalDate in volume) {
 		swaps[intervalDate] = volume[intervalDate].reduce(
 			(a) => {
@@ -84,17 +82,9 @@ const getVolume = () => {
 		volume[intervalDate].time = Number.parseInt(intervalDate, 10);
 		swaps[intervalDate].time = Number.parseInt(intervalDate, 10);
 	}
-	volume = Object.values(volume);
-	swaps = Object.values(swaps);
-};
-let precision = 1e-2;
-$: {
-	getVolume();
-	getData();
-	precision = getSignificantDigits(trades.flatMap((e) => [e.open, e.close]));
-	interval;
-	key;
-}
+	return [Object.values(volume), Object.values(swaps)];
+})());
+let precision = $derived(getSignificantDigits(trades.flatMap((e) => [e.open, e.close])));
 
 const chartLayout = {
 	background: {
@@ -110,7 +100,7 @@ const gridLayout = {
 		color: "#FFF5",
 	},
 };
-let w;
+let w = $state();
 </script>
 
 <svelte:head>
