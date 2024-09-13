@@ -10,38 +10,42 @@ import {
 import { CandlestickSeries, Chart, TimeScale } from "svelte-lightweight-charts";
 
 const market = $page.params.market;
-let {data} = $props();
+let { data } = $props();
 const interval = 86400000;
-let trades = $derived((() => {
-	let trades = data.trades
-		.map((e) => {
-			return {
-				time: new Date(e.date),
-				value: getPrice(e.price, e.currency, false, false),
-			};
-		})
-		.toSorted((a, b) => (a.time - b.time));
+let trades = $derived(
+	(() => {
+		let trades = data.trades
+			.map((e) => {
+				return {
+					time: new Date(e.date),
+					value: getPrice(e.price, e.currency, false, false),
+				};
+			})
+			.toSorted((a, b) => a.time - b.time);
 
-	trades = Object.groupBy(
-		trades,
-		({ time }) => new Date(time - (time % interval)) / 1000,
-	);
+		trades = Object.groupBy(
+			trades,
+			({ time }) => new Date(time - (time % interval)) / 1000,
+		);
 
-	for (const intervalDate in trades) {
-		trades[intervalDate] = trades[intervalDate].reduce((a, c) => {
-			return {
-				open: a.open ?? c.value,
-				close: c.value,
-				high: (c.value > a.high ? c.value : a.high) ?? c.value,
-				low: (c.value < a.low ? c.value : a.low) ?? c.value,
-			};
-		}, {});
-		trades[intervalDate].time = Number.parseInt(intervalDate, 10);
-	}
-	return Object.values(trades);
-})());
+		for (const intervalDate in trades) {
+			trades[intervalDate] = trades[intervalDate].reduce((a, c) => {
+				return {
+					open: a.open ?? c.value,
+					close: c.value,
+					high: (c.value > a.high ? c.value : a.high) ?? c.value,
+					low: (c.value < a.low ? c.value : a.low) ?? c.value,
+				};
+			}, {});
+			trades[intervalDate].time = Number.parseInt(intervalDate, 10);
+		}
+		return Object.values(trades);
+	})(),
+);
 
-let precision = $derived(getSignificantDigits(trades.flatMap((e) => [e.open, e.close])));
+let precision = $derived(
+	getSignificantDigits(trades.flatMap((e) => [e.open, e.close])),
+);
 let w = $state();
 
 const chartLayout = {
@@ -117,7 +121,7 @@ const BUY_SELL = isMoneroQuote(market) ? ["SELL", "BUY"] : ["BUY", "SELL"];
 </div>
 <div class="row">
 	<div class="col card">
-		<h4>Last Trades</h4>
+		<h4>Latest Trades</h4>
 		<table>
 			<tbody>
 				<tr>

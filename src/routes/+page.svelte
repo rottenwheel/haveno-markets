@@ -15,76 +15,82 @@ import {
 	TimeScale,
 } from "svelte-lightweight-charts";
 
-let {data} = $props();
+let { data } = $props();
 const grouped = Object.groupBy(data.trades, ({ currency }) => currency);
 let interval = $state("86400000");
 let key = $state("USD");
-let trades = $derived((() => {
-	let trades = grouped[key]
-		.map((e) => {
-			return {
-				time: new Date(e.date),
-				value: getPrice(e.price, e.currency),
-			};
-		})
-		.toSorted((a, b) => (a.time - b.time));
-
-	trades = Object.groupBy(
-		trades,
-		({ time }) => new Date(time - (time % interval)) / 1000,
-	);
-
-	for (const intervalDate in trades) {
-		trades[intervalDate] = trades[intervalDate].reduce((a, c) => {
-			return {
-				open: a.open ?? c.value,
-				close: c.value,
-				high: (c.value > a.high ? c.value : a.high) ?? c.value,
-				low: (c.value < a.low ? c.value : a.low) ?? c.value,
-			};
-		}, {});
-		trades[intervalDate].time = Number.parseInt(intervalDate, 10);
-	}
-	return Object.values(trades);
-})());
-let [volume, swaps] = $derived((() => {
-	let volume = Object.groupBy(
-		data.trades
+let trades = $derived(
+	(() => {
+		let trades = grouped[key]
 			.map((e) => {
 				return {
-					volume: e.xmrAmount,
-					time: e.date,
+					time: new Date(e.date),
+					value: getPrice(e.price, e.currency),
 				};
 			})
-			.toSorted((a, b) => (a.time - b.time)),
-		({ time }) => new Date(time - (time % interval)) / 1000,
-	);
-	let swaps = {};
-	for (const intervalDate in volume) {
-		swaps[intervalDate] = volume[intervalDate].reduce(
-			(a) => {
-				return {
-					value: a.value + 1,
-				};
-			},
-			{ value: 0 },
+			.toSorted((a, b) => a.time - b.time);
+
+		trades = Object.groupBy(
+			trades,
+			({ time }) => new Date(time - (time % interval)) / 1000,
 		);
 
-		volume[intervalDate] = volume[intervalDate].reduce(
-			(a, c) => {
+		for (const intervalDate in trades) {
+			trades[intervalDate] = trades[intervalDate].reduce((a, c) => {
 				return {
-					value: a.value + c.volume / 10 ** 12,
+					open: a.open ?? c.value,
+					close: c.value,
+					high: (c.value > a.high ? c.value : a.high) ?? c.value,
+					low: (c.value < a.low ? c.value : a.low) ?? c.value,
 				};
-			},
-			{ value: 0 },
+			}, {});
+			trades[intervalDate].time = Number.parseInt(intervalDate, 10);
+		}
+		return Object.values(trades);
+	})(),
+);
+let [volume, swaps] = $derived(
+	(() => {
+		let volume = Object.groupBy(
+			data.trades
+				.map((e) => {
+					return {
+						volume: e.xmrAmount,
+						time: e.date,
+					};
+				})
+				.toSorted((a, b) => a.time - b.time),
+			({ time }) => new Date(time - (time % interval)) / 1000,
 		);
+		let swaps = {};
+		for (const intervalDate in volume) {
+			swaps[intervalDate] = volume[intervalDate].reduce(
+				(a) => {
+					return {
+						value: a.value + 1,
+					};
+				},
+				{ value: 0 },
+			);
 
-		volume[intervalDate].time = Number.parseInt(intervalDate, 10);
-		swaps[intervalDate].time = Number.parseInt(intervalDate, 10);
-	}
-	return [Object.values(volume), Object.values(swaps)];
-})());
-let precision = $derived(getSignificantDigits(trades.flatMap((e) => [e.open, e.close])));
+			volume[intervalDate] = volume[intervalDate].reduce(
+				(a, c) => {
+					return {
+						value: a.value + c.volume / 10 ** 12,
+					};
+				},
+				{ value: 0 },
+			);
+
+			volume[intervalDate].time = Number.parseInt(intervalDate, 10);
+			swaps[intervalDate].time = Number.parseInt(intervalDate, 10);
+		}
+		return [Object.values(volume), Object.values(swaps)];
+	})(),
+);
+let precision = $derived(
+	getSignificantDigits(trades.flatMap((e) => [e.open, e.close])),
+);
 
 const chartLayout = {
 	background: {
@@ -188,6 +194,6 @@ let w = $state();
 		{/each}
 	</tbody>
 </table>
-<h4><a href="trades">View more »</a></h4>
+<h4><a href="markets">View more »</a></h4>
 </div>
 </div>
