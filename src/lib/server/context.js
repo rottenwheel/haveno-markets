@@ -40,11 +40,9 @@ const formatOffers = (e) => {
 	);
 };
 const formatCrypto = (e) => {
-	e.push({
-		precision: 12,
-		code: "XMR",
-		sign: "ɱ",
-	});
+	let xmr = e[e.findIndex((e) => e.code === "XMR")];
+	xmr.sign = "ɱ";
+	xmr.precision = 12;
 	return e;
 };
 const formatFiat = (e) => {
@@ -54,6 +52,7 @@ const formatFiat = (e) => {
 	e[e.findIndex((e) => e.code === "AUD")].sign = "$";
 	e[e.findIndex((e) => e.code === "CAD")].sign = "$";
 	e[e.findIndex((e) => e.code === "SEK")].sign = "kr";
+	e[e.findIndex((e) => e.code === "BRL")].sign = "R$";
 	return e;
 };
 
@@ -67,12 +66,12 @@ Bun.file(`${import.meta.env.VITE_DB_PATH}trade_statistics.json`)
 	.then((j) => {
 		trades.set(formatTrades(j));
 	});
-Bun.file(`${import.meta.env.VITE_DB_PATH}active_traditional_currency_list.json`)
+Bun.file(`${import.meta.env.VITE_DB_PATH}traditional_currency_list.json`)
 	.json()
 	.then((j) => {
 		fiat.set(formatFiat(j));
 	});
-Bun.file(`${import.meta.env.VITE_DB_PATH}active_crypto_currency_list.json`)
+Bun.file(`${import.meta.env.VITE_DB_PATH}crypto_currency_list.json`)
 	.json()
 	.then((j) => {
 		crypto.set(formatCrypto(j));
