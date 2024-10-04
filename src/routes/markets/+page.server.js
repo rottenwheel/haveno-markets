@@ -1,6 +1,6 @@
-import { trades } from "$lib/server/context";
+import { offers, trades } from "$lib/server/context";
 import { get } from "svelte/store";
 
 export function load() {
-	return { trades: get(trades) };
+	return { trades: get(trades), offers: get(offers) };
 }

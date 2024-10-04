@@ -1,6 +1,6 @@
 <svelte:options runes={true} />
 <script>
-import { formatPrice, getAsset } from "$lib/formatPrice";
+import { crypto, fiat, formatPrice, getAsset } from "$lib/formatPrice";
 import {
 	Chart,
 	HistogramSeries,
@@ -10,6 +10,18 @@ import {
 } from "svelte-lightweight-charts";
 
 let { data } = $props();
+
+let groupedTrades = Object.groupBy(data.trades, ({ currency }) => currency);
+let markets = [...$fiat, ...$crypto]
+	.map((e) => {
+		return {
+			...e,
+			trades: groupedTrades[e.code],
+			offers: data.offers[e.code],
+		};
+	})
+	.filter((e) => e.offers || e.trades);
+
 let interval = $state("86400000");
 let [volume, swaps] = $derived(
 	(() => {
@@ -79,7 +91,8 @@ let w = $state();
 				<option value="3600000">Hourly</option>
 				<option value="86400000">Daily</option>
 				<option value="604800000">Weekly</option>
-			</select> Volume</h4>
+			</select> Volume
+		</h4>
 		<Chart width={w-20} height={500} container={{class:"row"}} layout={chartLayout} grid={gridLayout}>
 			<LineSeries data={volume} reactive={true} priceFormat={{precision:2, minMove:.01}}>
 				<PriceScale scaleMargins={{bottom:.4, top:.1}}/>
@@ -99,18 +112,29 @@ let w = $state();
 			<tr>
 				<th>Currency</th>
 				<th>Price</th>
+				<th>Offers</th>
                 <th>Volume (XMR)</th>
 				<th>Trades</th>
 			</tr>
-			{#each Object.values(Object.groupBy(data.trades, ({currency}) => currency)).toSorted((a,b) => b.length - a.length || (b[0].currency < a[0].currency ? 1 : -1)).slice(0, 16) as market}
+			{#each Object.values(markets).toSorted((a,b) => (b.trades?.length||0) - (a.trades?.length||0) || (b.offers?.length||0) - (a.offers?.length||0) || (b.code < a.code ? 1 : -1)) as market}
 			<tr>
-                <td><a href="market/{market[0].currency}">{getAsset(market[0].currency).name} ({market[0].currency})</a></td>
-				<td>{formatPrice(market[0].price, market[0].currency, true, false)}</td>
-                <td>{formatPrice(market.reduce((a,b) => a + b.xmrAmount, 0), "XMR", false, false)}</td>
-				<td>{market.length}</td>
+                <td><a href="market/{market.code}">{getAsset(market.code).name} ({market.code})</a></td>
+				<td>{formatPrice(market.trades?.[0]?.price, market.code, true, false) || "-"}</td>
+				<td>{market.offers?.length || "-"}</td>
+                <td>{formatPrice(market.trades?.reduce((a,b) => a + b.xmrAmount, 0), "XMR", false, false) || "-"}</td>
+				<td>{market.trades?.length || "-"}</td>
 			</tr>
 			{/each}
 		</tbody>
+		<tfoot>
+			<tr>
+				<td></td>
+				<td></td>
+				<td>{Object.values(data.offers).flat().length}</td>
+				<td>{formatPrice(data.trades.reduce((a,b) => a + b.xmrAmount, 0), "XMR", false, false)}</td>
+				<td>{data.trades.length}</td>
+			</tr>
+		</tfoot>
 	</table>
 </div>
 </div>

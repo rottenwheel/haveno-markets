@@ -71,7 +71,7 @@ Object.groupBy ||= (values, keyFinder) => {
 		margin-top:auto;
 		text-align:center;
 	}
-	.col{
+	.col {
 		display:flex;
 		flex-direction: column;
 		align-items: center;
@@ -108,11 +108,14 @@ Object.groupBy ||= (values, keyFinder) => {
 				text-align:right;
 				padding:.3em;
 			}
-			th:first-child, td:first-child{
+			th:first-child, td:first-child {
 				text-align:left;
 			}
-			tr:nth-child(2n){
+			tbody tr:nth-child(2n) {
 				background-color: #0002;
+			}
+			tfoot {
+				border-top: #0004 double 4px;
 			}
 		}
 	}
@@ -121,7 +124,7 @@ Object.groupBy ||= (values, keyFinder) => {
 		text-decoration: none;
 		color:#f60;
 	}
-	a:hover{
+	a:hover {
 		text-decoration: underline;
 	}
 	.price {
@@ -159,7 +162,7 @@ Object.groupBy ||= (values, keyFinder) => {
 		justify-content: center;
 		gap:.2em;
 	}
-	@media only screen and (max-width: 600px){
+	@media only screen and (max-width: 600px) {
 		.header > * {
 			width:initial;
 		}

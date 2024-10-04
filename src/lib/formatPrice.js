@@ -37,6 +37,7 @@ const formatPrice = (
 	showSign = false,
 	useQuote = true,
 ) => {
+	if (!price) return Number.NaN;
 	const calculatedPrice = getPrice(price, currency, useQuote);
 	return (
 		(showSign

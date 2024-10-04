@@ -72,11 +72,13 @@ const BUY_SELL = isMoneroQuote(market) ? ["SELL", "BUY"] : ["BUY", "SELL"];
 <div class="row">
 	<div class="col card" bind:clientWidth={w}>
 		<h4>{marketPair}</h4>
-		<span class="price">{formatPrice(data.trades?.[0]?.price, market, true, false)}</span>
-		<Chart width={w-20} height={500} container={{class:"row"}} layout={chartLayout} grid={gridLayout}>
-			<CandlestickSeries data={trades} reactive={true} priceFormat={{minMove:10**-precision, precision:precision}}></CandlestickSeries>
-			<TimeScale rightBarStaysOnScroll={true} rightOffset={0}/>
-		</Chart>
+		<span class="price">{formatPrice(data.trades?.[0]?.price, market, true, false) || "-"}</span>
+		{#if data.trades?.length}
+			<Chart width={w-20} height={500} container={{class:"row"}} layout={chartLayout} grid={gridLayout}>
+				<CandlestickSeries data={trades} reactive={true} priceFormat={{minMove:10**-precision, precision:precision}}></CandlestickSeries>
+				<TimeScale rightBarStaysOnScroll={true} rightOffset={0}/>
+			</Chart>
+		{/if}
 	</div>
 </div>
 <div class="row">
