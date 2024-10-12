@@ -43,6 +43,11 @@ Object.groupBy ||= (values, keyFinder) => {
 				href="http://okoeicsihmjkqcqaiqow3arcrzm5ascwhpxq34incxg6a5z4tjza.b32.i2p"
 				>(b32)</a
 			>
+			|
+			<a
+				href="http://gg6zxtreajiijztyy5g6bt5o6l3qu32nrg7eulyemlhxwwl6enk6ghad.onion/wireless_purple/haveno-markets"
+				>git</a
+			>
 		</span>
 		<span style="display:flex;gap:.2em;">
 			Data from:
