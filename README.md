@@ -1,5 +1,7 @@
-# haveno-markets
+# Haveno Markets
+
 ## Requirements
-* Haveno
-* ./haveno-statsnode --dumpStatistics=true
-* bun
+
+- Haveno
+- ./haveno-statsnode --dumpStatistics=true
+- bun

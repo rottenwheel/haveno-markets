@@ -1,4 +1,5 @@
 <svelte:options runes={true} />
+
 <script>
 import { crypto, fiat, formatPrice, getAsset } from "$lib/formatPrice";
 import {
@@ -93,71 +94,119 @@ let w = $state();
 				<option value="604800000">Weekly</option>
 			</select> Volume
 		</h4>
-		<Chart width={w-20} height={500} container={{class:"row"}} layout={chartLayout} grid={gridLayout}>
-			<LineSeries data={volume} reactive={true} priceFormat={{precision:2, minMove:.01}}>
-				<PriceScale scaleMargins={{bottom:.4, top:.1}}/>
+		<Chart
+			width={w - 20}
+			height={500}
+			container={{ class: "row" }}
+			layout={chartLayout}
+			grid={gridLayout}
+		>
+			<LineSeries
+				data={volume}
+				reactive={true}
+				priceFormat={{ precision: 2, minMove: 0.01 }}
+			>
+				<PriceScale scaleMargins={{ bottom: 0.4, top: 0.1 }} />
 			</LineSeries>
-			<HistogramSeries data={swaps} reactive={true} priceScaleId="" priceFormat={{precision:0, minMove:1}}>
-				<PriceScale scaleMargins={{top:.7, bottom:0}}/>
+			<HistogramSeries
+				data={swaps}
+				reactive={true}
+				priceScaleId=""
+				priceFormat={{ precision: 0, minMove: 1 }}
+			>
+				<PriceScale scaleMargins={{ top: 0.7, bottom: 0 }} />
 			</HistogramSeries>
-			<TimeScale rightBarStaysOnScroll={true} rightOffset={0}/>
+			<TimeScale rightBarStaysOnScroll={true} rightOffset={0} />
 		</Chart>
 	</div>
 </div>
 <div class="row">
-<div class="card col">
-	<h4>Markets</h4>
-	<table>
-		<tbody>
-			<tr>
-				<th>Currency</th>
-				<th>Price</th>
-				<th>Offers</th>
-                <th>Volume (XMR)</th>
-				<th>Trades</th>
-			</tr>
-			{#each Object.values(markets).toSorted((a,b) => (b.trades?.length||0) - (a.trades?.length||0) || (b.offers?.length||0) - (a.offers?.length||0) || (b.code < a.code ? 1 : -1)) as market}
-			<tr>
-                <td><a href="market/{market.code}">{getAsset(market.code).name} ({market.code})</a></td>
-				<td>{formatPrice(market.trades?.[0]?.price, market.code, true, false) || "-"}</td>
-				<td>{market.offers?.length || "-"}</td>
-                <td>{formatPrice(market.trades?.reduce((a,b) => a + b.xmrAmount, 0), "XMR", false, false) || "-"}</td>
-				<td>{market.trades?.length || "-"}</td>
-			</tr>
-			{/each}
-		</tbody>
-		<tfoot>
-			<tr>
-				<td></td>
-				<td></td>
-				<td>{Object.values(data.offers).flat().length}</td>
-				<td>{formatPrice(data.trades.reduce((a,b) => a + b.xmrAmount, 0), "XMR", false, false)}</td>
-				<td>{data.trades.length}</td>
-			</tr>
-		</tfoot>
-	</table>
-</div>
+	<div class="card col">
+		<h4>Markets</h4>
+		<table>
+			<tbody>
+				<tr>
+					<th>Currency</th>
+					<th>Price</th>
+					<th>Offers</th>
+					<th>Volume (XMR)</th>
+					<th>Trades</th>
+				</tr>
+				{#each Object.values(markets).toSorted((a, b) => (b.trades?.length || 0) - (a.trades?.length || 0) || (b.offers?.length || 0) - (a.offers?.length || 0) || (b.code < a.code ? 1 : -1)) as market}
+					<tr>
+						<td
+							><a href="market/{market.code}"
+								>{getAsset(market.code).name} ({market.code})</a
+							></td
+						>
+						<td
+							>{formatPrice(
+								market.trades?.[0]?.price,
+								market.code,
+								true,
+								false,
+							) || "-"}</td
+						>
+						<td>{market.offers?.length || "-"}</td>
+						<td
+							>{formatPrice(
+								market.trades?.reduce((a, b) => a + b.xmrAmount, 0),
+								"XMR",
+								false,
+								false,
+							) || "-"}</td
+						>
+						<td>{market.trades?.length || "-"}</td>
+					</tr>
+				{/each}
+			</tbody>
+			<tfoot>
+				<tr>
+					<td></td>
+					<td></td>
+					<td>{Object.values(data.offers).flat().length}</td>
+					<td
+						>{formatPrice(
+							data.trades.reduce((a, b) => a + b.xmrAmount, 0),
+							"XMR",
+							false,
+							false,
+						)}</td
+					>
+					<td>{data.trades.length}</td>
+				</tr>
+			</tfoot>
+		</table>
+	</div>
 </div>
 <div class="row">
-<div class="card col">
-	<h4>Latest Trades</h4>
-<table>
-	<tbody>
-		<tr>
-			<th>Date</th>
-            <th>Price</th>
-			<th>Amount (XMR)</th>
-			<th>Amount</th>
-		</tr>
-		{#each data.trades.slice(0, 64) as trade}
-		<tr>
-			<td>{new Date(trade.date).toISOString().replace("T", " ").replace(/\.\d*Z/, "")}</td>
-            <td>{formatPrice(trade.price, trade.currency, true, false)}</td>
-			<td>{formatPrice(trade.xmrAmount, "XMR", false, false)}</td>
-			<td>{formatPrice(trade.amount, trade.currency, false, false)} <span class="trade-currency">{trade.currency}</span></td>
-		</tr>
-		{/each}
-	</tbody>
-</table>
-</div>
+	<div class="card col">
+		<h4>Latest Trades</h4>
+		<table>
+			<tbody>
+				<tr>
+					<th>Date</th>
+					<th>Price</th>
+					<th>Amount (XMR)</th>
+					<th>Amount</th>
+				</tr>
+				{#each data.trades.slice(0, 64) as trade}
+					<tr>
+						<td
+							>{new Date(trade.date)
+								.toISOString()
+								.replace("T", " ")
+								.replace(/\.\d*Z/, "")}</td
+						>
+						<td>{formatPrice(trade.price, trade.currency, true, false)}</td>
+						<td>{formatPrice(trade.xmrAmount, "XMR", false, false)}</td>
+						<td
+							>{formatPrice(trade.amount, trade.currency, false, false)}
+							<span class="trade-currency">{trade.currency}</span></td
+						>
+					</tr>
+				{/each}
+			</tbody>
+		</table>
+	</div>
 </div>
