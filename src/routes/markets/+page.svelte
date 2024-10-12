@@ -124,7 +124,7 @@ let w = $state();
 	<div class="card col">
 		<h4>Markets</h4>
 		<table>
-			<tbody>
+			<thead>
 				<tr>
 					<th>Currency</th>
 					<th>Price</th>
@@ -132,6 +132,8 @@ let w = $state();
 					<th>Volume (XMR)</th>
 					<th>Trades</th>
 				</tr>
+			</thead>
+			<tbody>
 				{#each Object.values(markets).toSorted((a, b) => (b.trades?.length || 0) - (a.trades?.length || 0) || (b.offers?.length || 0) - (a.offers?.length || 0) || (b.code < a.code ? 1 : -1)) as market}
 					<tr>
 						<td

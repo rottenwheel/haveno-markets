@@ -67,6 +67,9 @@ Object.groupBy ||= (values, keyFinder) => {
 </div>
 
 <style lang="scss" global>
+	html {
+		font-family: sans-serif;
+	}
 	.app {
 		display: flex;
 		width: 100%;
@@ -127,7 +130,7 @@ Object.groupBy ||= (values, keyFinder) => {
 			td:first-child {
 				text-align: left;
 			}
-			tbody tr:nth-child(2n) {
+			tbody tr:nth-child(2n + 1) {
 				background-color: #0002;
 			}
 			tfoot {

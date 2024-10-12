@@ -9,6 +9,7 @@ import {
 	isMoneroQuote,
 } from "$lib/formatPrice";
 import { CandlestickSeries, Chart, TimeScale } from "svelte-lightweight-charts";
+import Offers from "./Offers.svelte";
 
 const market = $page.params.market;
 let { data } = $props();
@@ -66,6 +67,8 @@ const gridLayout = {
 
 const marketPair = isMoneroQuote(market) ? `${market}/XMR` : `XMR/${market}`;
 const BUY_SELL = isMoneroQuote(market) ? ["SELL", "BUY"] : ["BUY", "SELL"];
+
+let showOrders = $state(false);
 </script>
 
 <svelte:head>
@@ -96,70 +99,41 @@ const BUY_SELL = isMoneroQuote(market) ? ["SELL", "BUY"] : ["BUY", "SELL"];
 	</div>
 </div>
 <div class="row">
-	<div class="col card">
-		<h4>Buy Offers</h4>
-		<table>
-			<tbody>
-				<tr>
-					<th>Price</th>
-					<th>Amount (XMR)</th>
-					<th>Amount ({market})</th>
-				</tr>
-				{#each data.offers[BUY_SELL[0]]?.toSorted((a, b) => b.price - a.price) || [] as offer}
-					<tr title={offer.paymentMethod}>
-						<td>{formatPrice(offer.price, market, false, false)}</td>
-						<td>{formatPrice(offer.amount, "XMR", false, false)}</td>
-						<td
-							>{formatPrice(
-								offer.primaryMarketAmount,
-								market,
-								false,
-								false,
-							)}</td
-						>
-					</tr>
-				{/each}
-			</tbody>
-		</table>
-	</div>
-	<div class="col card">
-		<h4>Sell Offers</h4>
-		<table>
-			<tbody>
-				<tr>
-					<th>Price</th>
-					<th>Amount (XMR)</th>
-					<th>Amount ({market})</th>
-				</tr>
-				{#each data.offers[BUY_SELL[1]]?.toSorted((a, b) => a.price - b.price) || [] as offer}
-					<tr title={offer.paymentMethod}>
-						<td>{formatPrice(offer.price, market, false, false)}</td>
-						<td>{formatPrice(offer.amount, "XMR", false, false)}</td>
-						<td
-							>{formatPrice(
-								offer.primaryMarketAmount,
-								market,
-								false,
-								false,
-							)}</td
-						>
-					</tr>
-				{/each}
-			</tbody>
-		</table>
+	<Offers
+		offers={Object.values(data.offers[BUY_SELL[0]])?.toSorted(
+			(a, b) => b[0].price - a[0].price,
+		)}
+		{market}
+		title="Buy Offers"
+		{showOrders}
+	/>
+	<Offers
+		offers={Object.values(data.offers[BUY_SELL[1]])?.toSorted(
+			(a, b) => a[0].price - b[0].price,
+		)}
+		{market}
+		title="Sell Offers"
+		{showOrders}
+	/>
+</div>
+<div class="row">
+	<div class="col">
+		<input type="checkbox" bind:checked={showOrders} />Show Individual Offers?
 	</div>
 </div>
 <div class="row">
 	<div class="col card">
 		<h4>Latest Trades</h4>
 		<table>
-			<tbody>
+			<thead>
 				<tr>
 					<th>Date</th>
 					<th>Price</th>
 					<th>Amount (XMR)</th>
 					<th>Amount ({market})</th>
 				</tr>
+			</thead>
+			<tbody>
 				{#each data.trades as trade}
 					<tr>
 						<td

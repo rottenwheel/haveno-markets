@@ -190,12 +190,14 @@ let w = $state();
 	<div class="card col">
 		<h4>Markets</h4>
 		<table>
-			<tbody>
+			<thead>
 				<tr>
 					<th>Currency</th>
 					<th>Price</th>
 					<th>Trades</th>
 				</tr>
+			</thead>
+			<tbody>
 				{#each Object.values(Object.groupBy(data.trades, ({ currency }) => currency))
 					.toSorted((a, b) => b.length - a.length || (b[0].currency < a[0].currency ? 1 : -1))
 					.slice(0, 16) as market}
@@ -223,12 +225,14 @@ let w = $state();
 	<div class="card col">
 		<h4>Trades</h4>
 		<table>
-			<tbody>
+			<thead>
 				<tr>
 					<th>Date</th>
 					<th>Amount (XMR)</th>
 					<th>Amount</th>
 				</tr>
+			</thead>
+			<tbody>
 				{#each data.trades.slice(0, 16) as trade}
 					<tr>
 						<td

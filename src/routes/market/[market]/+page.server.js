@@ -8,6 +8,12 @@ export async function load({ params }) {
 			get(offers)[params.market],
 			({ direction }) => direction,
 		);
+		groupedOffers.BUY = groupedOffers.BUY
+			? Object.groupBy(groupedOffers.BUY, ({ price }) => price)
+			: [];
+		groupedOffers.SELL = groupedOffers.SELL
+			? Object.groupBy(groupedOffers.SELL, ({ price }) => price)
+			: [];
 	}
 	return {
 		trades: get(trades).filter(({ currency }) => currency === params.market),
