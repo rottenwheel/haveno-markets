@@ -185,13 +185,15 @@ let w = $state();
 	<div class="card col">
 		<h4>Latest Trades</h4>
 		<table>
-			<tbody>
+			<thead>
 				<tr>
 					<th>Date</th>
 					<th>Price</th>
 					<th>Amount (XMR)</th>
 					<th>Amount</th>
 				</tr>
+			</thead>
+			<tbody>
 				{#each data.trades.slice(0, 64) as trade}
 					<tr>
 						<td
